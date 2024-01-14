@@ -7,7 +7,6 @@ import db_config
 from decouple import config
 from googletrans import Translator
 
-
 pd.set_option('display.max_columns', None)
 
 
@@ -15,6 +14,7 @@ def translate_to_russian(text):
     translator = Translator()
     translation = translator.translate(text, src='en', dest='ru')
     return translation.text
+
 
 # sender_name = 'Paul'
 # sender_address = 'client_01@gmail.com'
@@ -66,7 +66,7 @@ def get_sender_name(email_text):
         return None
 
 
-# Trusted clients list
+# Trusted clients list from .env. Excel file can be used.
 client_address_ls = config('CLIENT_EMAIL_LIST').split(',')
 
 for email in client_address_ls:
@@ -75,12 +75,15 @@ for email in client_address_ls:
 # Clients' data from database
 client_db = db_config.get_data(table_name='clients')
 
-# Checking and inserting clients' info from list to db. temp.
-# for email in client_address_ls:  # temp
-#     if email not in [row[3] for row in client_db]:
-#         name, surname = email.split('@')[0].split('_')
-#         data = {'name': name, 'surname': surname, 'email_address': email}
-#         db_config.insert_data(table_name='clients', data=data, condition=data)
+# Check and insert clients info from list into db. temp.
+for email in client_address_ls:  # temp
+    if email not in [row[3] for row in client_db]:
+        try:
+            name, surname = email.split('@')[0].split('_')
+        except (ValueError, IndexError):
+            name, surname = None, None
+        data = {'name': name, 'surname': surname, 'email_address': email}
+        db_config.insert_data(table_name='clients', data=data, condition=data)
 
 print('Clients data: \n', client_db)
 # print(db_config.get_data(table_name='clients'))
@@ -88,15 +91,15 @@ print('Clients data: \n', client_db)
 # # Email message processing
 for message in html_msgs:
     sender, subject, body, content_type = message
-    # sender = sender.split()[1][1:-1]  # in case, the sender info consists of name and address
-    print("SENDER: ", sender)
+    # sender = sender.split()[1][1:-1]  # in case, the sender info consists of name and address,
+    # e.g. Google <google@gmail.com>
 
     if sender in [row[3] for row in client_db]:
         if content_type not in ['text/plain', 'text/html']:
             continue
-        print('\nMessage processing.')
+        print('\nMessage processing...')
         name = get_sender_name(body)
-        # print("Name: ", name)
+
         # translated_body = translate_to_russian(body)
         # print(translated_body)
 
