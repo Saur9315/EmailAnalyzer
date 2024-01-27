@@ -35,8 +35,12 @@ def get_email_messages(email_address, password):
     mail.select("inbox")
 
     # Search for all emails in the mailbox
-    # status, messages = mail.search(None, "ALL")  # also UNSEEN, f"(UNSEEN SINCE {date})"
-    status, messages = mail.search(None, f"(SINCE {get_last_week_date()})")  # also UNSEEN, f"(UNSEEN SINCE {date})"
+    status, messages = mail.search(None, "ALL")  # also UNSEEN, f"(UNSEEN SINCE {date})"
+
+    # since_date = (datetime.strptime('2024-01-01', '%Y-%m-%d') + timedelta(days=1)).strftime('%d-%b-%Y')
+    # status, messages = mail.search(None, f"(SINCE {since_date})")
+
+    # status, messages = mail.search(None, f"(SINCE {get_last_week_date()})")  # also UNSEEN, f"(UNSEEN SINCE {date})"
     message_ids = messages[0].split()
 
     all_emails = []
@@ -55,7 +59,7 @@ def get_email_messages(email_address, password):
         content_type = msg.get("Content-Type")
 
         # print("Sender:", sender)
-        print("Subject:", subject)
+        # print("Subject:", subject)
         # print("Content Type:", content_type)
         # print()
 
@@ -64,7 +68,7 @@ def get_email_messages(email_address, password):
         # print(body)
 
         body = get_plain_text_from_email(msg)
-        print(body)
+        # print(body)
 
         all_emails.append((sender, subject, body, content_type))
 

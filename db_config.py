@@ -66,7 +66,7 @@ def create_table():
     # print('The table clients has been inserted.')
 
     create_table_query2 = '''
-        CREATE TABLE IF NOT EXISTS client_inquiry_support (
+        CREATE TABLE IF NOT EXISTS clients_inquiry_support (
             id SERIAL PRIMARY KEY,
             email_address VARCHAR NOT NULL UNIQUE, 
             name VARCHAR, 

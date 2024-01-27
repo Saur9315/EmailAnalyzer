@@ -6,14 +6,20 @@ import nlp_message_processing
 import db_config
 from decouple import config
 from googletrans import Translator
+from langdetect import detect
 
 pd.set_option('display.max_columns', None)
 
 
-def translate_to_russian(text):
-    translator = Translator()
-    translation = translator.translate(text, src='ru', dest='en')
-    return translation.text
+def translate_text(text, destination='en'):
+    source_language = detect(text)  # If the detected language is not English, translate it
+    print(source_language)
+    if source_language != 'en':
+        translator = Translator()
+        translation = translator.translate(text, src=source_language, dest=destination)
+        return translation.text
+    else:
+        return text
 
 
 # sender_name = 'Paul'
@@ -56,6 +62,9 @@ def translate_to_russian(text):
 html_msgs = email_retrieve.get_email_messages(email_address=config('EMAIL_ADDRESS'), password=config('PASSWORD'))
 
 
+# print(html_msgs)
+
+
 def get_sender_name(email_text):
     # sender_name_pattern = re.compile(r"Best\s*regards,\s*([^.\r\n]+)", re.IGNORECASE)
     sender_name_pattern = re.compile(r"(Sincerely|Best\s*regards|Kind\s*regards|Regards),\s*([^.\r\n]+)", re.IGNORECASE)
@@ -91,33 +100,38 @@ print('Clients data: \n', client_db)
 # print(db_config.get_data(table_name='clients'))
 clients_email_addresses = [row[3] for row in client_db]
 print('clients: ', clients_email_addresses)
-# # Email message processing
+
+# Email message processing
 for message in html_msgs:
     sender, subject, body, content_type = message
     sender = sender.split()[-1][1:-1]  # in case, the sender info consists of name and address,
     # e.g. Google <google@gmail.com>
+    print(sender)
     if sender in [row[3] for row in client_db]:
         # print(sender, content_type, '\n')
-        print(body)
+        # print(f"original: ", body)
         if content_type.split(';')[0] not in ['text/plain', 'text/html', 'multipart/alternative']:
             print(content_type)
             continue
         print('\nMessage processing...')
-        print(f"subject: {subject}")
-        translated_body = translate_to_russian(body)
-        print(translated_body)
+        translated_subject = translate_text(subject)
+        # print(f"subject: {translated_subject}")
+        translated_body = translate_text(body)
+        # print(translated_body)
         # name = get_sender_name(body)  # back
         # name = get_sender_name(translated_body)  # back
         # name = body.split(',')[-1].strip().rstrip('.')
         name = translated_body.split(',')[-1].strip().rstrip('.')
-        print(f'Name: {name}')
+        name = name if len(name) < 30 else None
+        # print(f'Name: {name}')
 
         # ML
         # label_predicted = ml_model.load_and_predict(new_text=body)[0]
         label_predicted = ml_model.load_and_predict(new_text=translated_body)[0]
-        print('\nLabel predicted: ', label_predicted)
+        # print('\nLabel predicted: ', label_predicted)
 
-        data = {'email_address': sender, 'name': name, 'subject': subject, 'intention': label_predicted,
+        data = {'email_address': sender, 'name': name, 'subject': translated_subject, 'intention': label_predicted,
                 'is_solved': False}
-        db_config.insert_data(table_name='client_inquiry_support', data=data, condition=data)
+        # print(data)
+        db_config.insert_data(table_name='clients_inquiry_support', data=data, condition=data)
         db_config.update_data(table_name='clients', data={'name': name}, condition={'email_address': sender})
