@@ -58,11 +58,6 @@ def get_email_messages(email_address, password):
 
         content_type = msg.get("Content-Type")
 
-        # print("Sender:", sender)
-        # print("Subject:", subject)
-        # print("Content Type:", content_type)
-        # print()
-
         # Access the email body using msg.get_payload()
         # body = msg.get_payload()
         # print(body)
@@ -76,8 +71,3 @@ def get_email_messages(email_address, password):
     mail.close()
     mail.logout()
     return all_emails
-
-
-# msg = get_email_messages(email_address=config('EMAIL_ADDRESS'), password=config('PASSWORD'))
-# print(msg)
-# print(msg[0][0].split()[1][1:-1])
