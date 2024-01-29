@@ -18,16 +18,16 @@ pip install -r requirements.txt
 The configuration for the project is managed through the '.env' file. Make sure to fill in the necessary information before running the project.
 
 ```
-EMAIL_ADDRESS='адрес электронной почты'
-PASSWORD='пароль от электронной почты'
+EMAIL_ADDRESS='email address'
+PASSWORD='email password'
 
-CLIENT_EMAIL_LIST="список электронной почты клиетов"
+CLIENT_EMAIL_LIST="customer email list"
 
 DATA_GENERATOR=True/False
 NUM_SENTENCES_PER_LABEL=int
 
-MODEL_PATH='model/имя_модели.joblib'
-VECTORIZER_PATH='model/имя_векторизатора.joblib'
+MODEL_PATH='model/model_name.joblib'
+VECTORIZER_PATH='model/vectorizer_name.joblib'
 TRAIN_THE_MODEL=True/False
 ```
 
@@ -35,9 +35,9 @@ The configuration of database is through the 'database.ini' file.
 ```
 [postgresql]
 host=localhost
-database='имя базы данных
-user='пользователь'
-password='пароль от базы данных'
+database='database name'
+user='username'
+password='database password'
 port=5432
 ```
 
