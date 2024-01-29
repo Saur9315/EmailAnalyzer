@@ -9,7 +9,6 @@ import temp_data_generator
 import os
 from decouple import config
 
-from nlp_message_processing import nlp_processing
 
 pd.set_option('display.max_columns', None)
 
