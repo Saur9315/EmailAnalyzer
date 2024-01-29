@@ -2,7 +2,6 @@ import email_retrieve
 import pandas as pd
 import re
 import ml_model
-import nlp_message_processing
 import db_config
 from decouple import config
 from googletrans import Translator
