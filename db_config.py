@@ -23,9 +23,9 @@ def config(filename='database.ini', section='postgresql'):
     if not database_exists(db):  # create_or_check
         print(f"Database '{db['database']}' does not exist. Creating...")
         create_database(db)
-    else:
-        print(f"Database '{db['database']}' already exists.")
-        pass
+    # else:
+    #     print(f"Database '{db['database']}' already exists.")
+    #     pass
     return db
 
 
@@ -67,12 +67,13 @@ def create_table():
 
     create_table_query2 = '''
         CREATE TABLE IF NOT EXISTS clients_inquiry_support (
-            id SERIAL PRIMARY KEY,
-            email_address VARCHAR NOT NULL UNIQUE, 
+            id SERIAL,
+            email_address VARCHAR NOT NULL, 
             name VARCHAR, 
             subject VARCHAR NOT NULL, 
             intention VARCHAR NOT NULL, 
-            is_solved BOOLEAN NOT NULL
+            is_solved BOOLEAN NOT NULL,
+            PRIMARY KEY (email_address, subject)
         )
     '''
     cursor.execute(create_table_query2)
@@ -135,7 +136,7 @@ def insert_data(table_name, data, condition=None):
         if existing_row:
             print("Row already exists. Skipping insertion.")
         else:
-            # Insert the data if the row does not exist
+            # Insert the data if the row does not exist. todo solve for insertion
             insert_query = sql.SQL("INSERT INTO {} ({}) VALUES ({})").format(
                 sql.Identifier(table_name),
                 sql.SQL(', ').join(map(sql.Identifier, data.keys())),

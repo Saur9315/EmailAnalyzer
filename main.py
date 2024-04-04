@@ -18,8 +18,7 @@ def translate_text(text, destination='en'):
         translator = Translator()
         translation = translator.translate(text, src=source_language, dest=destination)
         return translation.text
-    else:
-        return text
+    return text
 
 
 # sender_name = 'Paul'
@@ -73,8 +72,7 @@ def get_sender_name(email_text):
         # name = match.group(1).strip()
         name = match.group(1).strip()
         return name
-    else:
-        return None
+    return None
 
 
 # Trusted clients list from .env. Excel file can be used.
@@ -133,5 +131,6 @@ for message in html_msgs:
         data = {'email_address': sender, 'name': name, 'subject': translated_subject, 'intention': label_predicted,
                 'is_solved': False}
         # print(data)
-        db_config.insert_data(table_name='clients_inquiry_support', data=data, condition=data)
+        db_config.insert_data(table_name='clients_inquiry_support', data=data,
+                              condition={'email_address': sender, 'subject': subject})
         db_config.update_data(table_name='clients', data={'name': name}, condition={'email_address': sender})
